@@ -5,10 +5,6 @@ const PROTO_FILE: &str = "protos/google/protobuf/types.proto";
 fn main() -> Result<()> {
     println!("cargo:rerun-if-changed={}", PROTO_FILE);
 
-    //let types = pbjson_utils::parse_proto_file(PROTO_FILE).expect("Unable to parse proto file!");
-
-    //println!("types:{types:#?}");
-
     let mut builder = tonic_build::configure()
         //.out_dir("src/protobuf")
         .build_client(false)
@@ -17,33 +13,29 @@ fn main() -> Result<()> {
         .disable_comments(".")
         .bytes([".google"]);
 
+    // type names can be parsed out and type attribute can be applied accross the board, default
+    // while custom ser/deser can be applied on per-case...
+    //
+    //
+
+    //make it serializable (serde_json or any other )
+
     builder = builder.type_attribute("Shirt", "#[derive( serde::Serialize, serde::Deserialize)]");
 
+    //make Well Known serializable (serde_json or any other )
     builder = builder.type_attribute(
         "UInt32Value",
         "#[derive( serde::Serialize, serde::Deserialize)]",
     );
 
+    //make Well Known serializable (serde_json or any other )
     builder = builder.type_attribute(
         "StringValue",
         "#[derive( serde::Serialize, serde::Deserialize)]",
     );
 
+    //Custom serializer
     builder = builder.type_attribute("FloatValue", "#[derive(pbjson_derive::SerializeFloat32)]");
-
-    // let mut config = prost_build::Config::new();
-    // config
-    //     //.file_descriptor_set_path(&descriptor_path)
-    //     .compile_well_known_types()
-    //     .disable_comments(["."])
-    //     .bytes([".google"])
-    //     //.skip_protoc_run()
-    //     ;
-
-    //let empty: &[&str] = &[];
-    //config.compile_protos(empty, empty)?;
-
-    //config.compile_protos(&[PROTO_FILE], &["protos/google/protobuf/"])?;
 
     builder.compile(&[PROTO_FILE], &["protos/google/protobuf/"])?;
     Ok(())
