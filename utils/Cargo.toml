@@ -1,0 +1,13 @@
+[package]
+name = "pbjson-utils"
+#version.workspace = true
+#edition.workspace = true
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+protobuf = "3.0.2"
+protobuf-parse = "3.3"
+
+anyhow = "1.0"
+heck = "0.4"
